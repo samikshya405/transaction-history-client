@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const URL = "http://localhost:8000/api/v1/user"
+const URL = "http://localhost:8000/api/v1/users"
 
 
 export const adduser =async(data)=>{
@@ -13,4 +13,17 @@ export const adduser =async(data)=>{
     }
     
     
+}
+
+export const signin = async(loginInfo)=>{
+    try {
+        const { data } = await axios.post(URL + "/login", loginInfo);
+        return data;
+      } catch (error) {
+        console.log(error);
+        return {
+          status: "error",
+          message: error.message,
+        };
+      }
 }

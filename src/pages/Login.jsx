@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { TopNav } from "../Component/TopNav";
 import { Footer } from "../Component/Footer";
 
 import { Row, Container, Col, Form, Button } from "react-bootstrap";
 import { CustomINput } from "../Component/CustomInput";
 
+import { useNavigate } from "react-router-dom";
+import { signin } from "../utilis/axioshelper";
 const Login = () => {
   const inputs = [
     {
@@ -22,9 +24,25 @@ const Login = () => {
       required: true,
     },
   ];
+  const initialstate = {
+    email: "",
+    password: "",
+  };
+  const [form, setForm] = useState(initialstate);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
 
-  const handleSubmit = (e) => {
+    setForm({ ...form, [name]: value });
+    setError("");
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const response = await signin(form);
+    response.status === "success"
+      ? navigate("/dashboard")
+      : setError("Invalid login credentials !");
   };
   return (
     <div>
@@ -51,14 +69,17 @@ const Login = () => {
               <h2>Login now</h2>
               <hr />
               <Form onSubmit={handleSubmit}>
+                {error && <div className="text-danger">{error}</div>}
                 {inputs.map((item, index) => (
-                  <CustomINput key={index} {...item} />
+                  <CustomINput key={index} {...item} onChange={handleChange} />
                 ))}
                 <div className="d-grid">
-                  <Button type="submit" >Login Now</Button>
+                  <Button type="submit">Login Now</Button>
                 </div>
               </Form>
-              <p className="m-2 text-center">Are you new? <a href="/signup">Signup now</a></p>
+              <p className="m-2 text-center">
+                Are you new? <a href="/signup">Signup now</a>
+              </p>
             </div>
           </Col>
         </Row>

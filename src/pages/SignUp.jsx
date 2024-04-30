@@ -23,12 +23,12 @@ const SignUp = () => {
       required: true,
     },
     {
-        label: "Phone",
-        name: "phone",
-        type: "text",
-        placeholder: "enter your number..",
-        required: true,
-      },
+      label: "Phone",
+      name: "phone",
+      type: "text",
+      placeholder: "enter your number..",
+      required: true,
+    },
     {
       label: "Password",
       name: "password",
@@ -45,27 +45,42 @@ const SignUp = () => {
     },
   ];
 
-  const initialstate ={
-    name:'',
-    email:'',
-    phone:'',
-    password:'',
-    confirmPassword:''
-  }
-  const [form, setForm] = useState(initialstate)
-  const handleChange=(e)=>{
-    const {name, value} = e.target
-    setForm({...form, [name]:value})
+  const initialstate = {
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  };
+  const [form, setForm] = useState(initialstate);
+  
+  const [message, setMessage] = useState({})
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setMessage({})
+    setForm({ ...form, [name]: value });
+  };
 
-  }
-
-  const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if(form.password!=form.confirmPassword) return alert("password didnot match")
+    if (form.password != form.confirmPassword)
+      return alert("password didnot match");
 
-    console.log(form)
-   await adduser(form)
-    setForm(initialstate)
+    
+    const response = await adduser(form);
+    if(response.data.status === "email already exist"){
+      setMessage(response.data)
+
+    }else if(response.data.status ==="success"){
+      setMessage(response.data)
+      setForm(initialstate)
+
+    }
+
+
+
+      
+      
   };
   return (
     <div>
@@ -92,14 +107,22 @@ const SignUp = () => {
               <h2>SignUp now</h2>
               <hr />
               <Form onSubmit={handleSubmit}>
+                <div className={message.status==="email already exist" ? 'text-danger' : "text-success"}>{message.message}</div>
                 {inputs.map((item, index) => (
-                  <CustomINput key={index} {...item} value={form[item.name]} onChange={handleChange}/>
+                  <CustomINput
+                    key={index}
+                    {...item}
+                    value={form[item.name]}
+                    onChange={handleChange}
+                  />
                 ))}
                 <div className="d-grid">
                   <Button type="submit">Sign up</Button>
                 </div>
               </Form>
-              <p className="m-2 text-center">Already have an account? <a href="/">Login</a></p>
+              <p className="m-2 text-center">
+                Already have an account? <a href="/">Login</a>
+              </p>
             </div>
           </Col>
         </Row>
